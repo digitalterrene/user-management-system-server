@@ -1,0 +1,53 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main # Trigger on commits to the main branch
+  pull_request:
+    branches:
+      - main # Trigger on pull requests targeting the main branch
+
+env:
+  NODE_ENV: test # Ensure that tests don't use 'authenticate'
+
+jobs:
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14" # Set the version of Node.js you are using
+
+      - name: Install dependencies
+        run: npm install # Install dependencies from package.json
+
+      - name: Run ESLint
+        run: npm run lint # Run ESLint (make sure it's defined in your package.json)
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: lint # Ensure linting runs before tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Jest tests
+        run: npm test # Run Jest tests
+
